@@ -1,11 +1,11 @@
-import { AccountService } from '../services/AccountService.js';
-import { type AccountInfo } from '../interfaces/account-info.js';
+import { AccountService } from "../services/AccountService.js";
+import { type AccountInfo } from "../interfaces/account-info.js";
 import {
   type TransactionData,
   type TransactionError,
   type TransactionResponse,
-} from '../interfaces/transaction-data.js';
-import { Types } from 'mongoose';
+} from "../interfaces/transaction-data.js";
+import { Types } from "mongoose";
 
 export default abstract class BankAccount {
   protected readonly accountId: Types.ObjectId;
@@ -24,10 +24,14 @@ export default abstract class BankAccount {
   /**
    * Creates transaction data object
    */
-  private buildTransaction(amount: number): TransactionData {
+  private buildTransaction(
+    amount: number,
+    chequeNumber?: string,
+  ): TransactionData {
     return {
       amount,
-      transaction: 'credit',
+      chequeNumber: chequeNumber!,
+      transaction: "credit",
     };
   }
 
@@ -44,7 +48,9 @@ export default abstract class BankAccount {
       userId: this.userId,
       accountId: this.accountId,
     });
-    const updatedAccount = await this.accountService.updateAccountBalance(this.accountId);
+    const updatedAccount = await this.accountService.updateAccountBalance(
+      this.accountId,
+    );
     this.balance = updatedAccount?.balance || 0;
     return updatedAccount;
   }
@@ -59,7 +65,7 @@ export default abstract class BankAccount {
       return `Minimum withdrawal amount is ₹${MIN_WITHDRAW}`;
     }
     if (amount % 100 !== 0) {
-      return 'Withdrawal amount must be in multiples of ₹100';
+      return "Withdrawal amount must be in multiples of ₹100";
     }
     return null; // ✅ valid
   }
@@ -67,17 +73,23 @@ export default abstract class BankAccount {
   /**
    * Deposits money into account
    */
-  async deposit(amount: number): Promise<TransactionResponse | TransactionError> {
+  async deposit(
+    amount: number,
+    chequeNumber?: string,
+  ): Promise<TransactionResponse | TransactionError> {
     if (!this.validateDeposit(amount)) {
-      return { message: 'Invalid amount' };
+      return { message: "Invalid amount" };
     }
-    const transaction = this.buildTransaction(amount);
+    const transaction = this.buildTransaction(amount, chequeNumber);
     const updatedAccount = await this.updateTransaction(transaction);
     return {
       accountNumber: this.accountNumber,
       balance: updatedAccount?.balance || 0,
+      chequeNumber: chequeNumber!,
     };
   }
 
-  abstract withdraw(amount: number): Promise<TransactionResponse | TransactionError>;
+  abstract withdraw(
+    amount: number,
+  ): Promise<TransactionResponse | TransactionError>;
 }

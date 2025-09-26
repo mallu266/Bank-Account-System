@@ -1,8 +1,9 @@
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 dotenv.config();
-const JWT_SECRET: string = process.env.JWT_SECRET || 'arjun';
-const JWT_EXPIRY = (process.env.JWT_EXPIRY || '10h') as jwt.SignOptions['expiresIn'];
+const JWT_SECRET: string = process.env.JWT_SECRET || "arjun";
+const JWT_EXPIRY = (process.env.JWT_EXPIRY ||
+  "10h") as jwt.SignOptions["expiresIn"];
 const options: jwt.SignOptions = { expiresIn: JWT_EXPIRY as any };
 class JwtService {
   // Generate JWT

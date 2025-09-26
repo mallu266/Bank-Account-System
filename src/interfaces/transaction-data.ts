@@ -1,11 +1,13 @@
 export interface TransactionData {
   amount: number;
-  transaction: 'credit' | 'debit';
+  chequeNumber?: string;
+  transaction: "credit" | "debit";
 }
 export interface TransactionResponse {
   accountNumber: string;
   balance: number;
   availableLimit?: number;
+  chequeNumber?: string;
 }
 
 export interface TransactionError {

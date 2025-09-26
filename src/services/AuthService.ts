@@ -1,4 +1,4 @@
-import { UserModel } from '../models/User.js';
+import { UserModel } from "../models/User.js";
 
 export class AuthService {
   async login(email: string, password: string): Promise<any> {
