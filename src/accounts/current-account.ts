@@ -1,10 +1,10 @@
-import type { AccountInfo } from '../interfaces/account-info.js';
-import BankAccount from '../abstractions/bank-account.js';
+import type { AccountInfo } from "../interfaces/account-info.js";
+import BankAccount from "../abstractions/bank-account.js";
 import type {
   TransactionData,
   TransactionError,
   TransactionResponse,
-} from '../interfaces/transaction-data.js';
+} from "../interfaces/transaction-data.js";
 
 // Subclass: Savings Account
 export class CurrentAccount extends BankAccount {
@@ -14,7 +14,9 @@ export class CurrentAccount extends BankAccount {
     this.overDraftLimit = accountInfo.overDraftLimit || 0;
   }
 
-  override async withdraw(amount: number): Promise<TransactionResponse | TransactionError> {
+  override async withdraw(
+    amount: number,
+  ): Promise<TransactionResponse | TransactionError> {
     const validation = this.validateWithdraw(amount);
     if (validation) {
       return { message: validation };
@@ -22,7 +24,7 @@ export class CurrentAccount extends BankAccount {
     if (this.balance + this.overDraftLimit >= amount) {
       const updateData: TransactionData = {
         amount,
-        transaction: 'debit',
+        transaction: "debit",
       };
       const updatedAccount = await this.updateTransaction(updateData);
       return {
@@ -31,6 +33,6 @@ export class CurrentAccount extends BankAccount {
         availableLimit: this.overDraftLimit + (updatedAccount?.balance || 0),
       };
     }
-    return { message: 'Insufficient/Overdraft balance in Current Account' };
+    return { message: "Insufficient/Overdraft balance in Current Account" };
   }
 }

@@ -1,7 +1,7 @@
-import type { NextFunction, Request, Response } from 'express';
-import { AccountService } from '../services/AccountService';
-import { AccountFactory } from '../utilities/account-factory';
-import type BankAccount from '../abstractions/bank-account';
+import type { NextFunction, Request, Response } from "express";
+import { AccountService } from "../services/AccountService";
+import { AccountFactory } from "../utilities/account-factory";
+import type BankAccount from "../abstractions/bank-account";
 
 export class AccountController {
   private readonly accountService = new AccountService();
@@ -18,11 +18,14 @@ export class AccountController {
   async depositAmount(req: Request, res: Response, next: NextFunction) {
     const userId = req?.user?.userId;
     const { accountNumber, amount } = req.body;
-    const accountInfo = await this.accountService.getAccountDetails(userId, accountNumber);
+    const accountInfo = await this.accountService.getAccountDetails(
+      userId,
+      accountNumber,
+    );
     if (!accountInfo) {
-      return next(new Error('Account not found'));
+      return next(new Error("Account not found"));
     }
-    const account: BankAccount= AccountFactory.createAccount(accountInfo);
+    const account: BankAccount = AccountFactory.createAccount(accountInfo);
     const result = await account.deposit(amount);
     res.json(result);
   }
@@ -44,12 +47,29 @@ export class AccountController {
   async withdrawAmount(req: Request, res: Response, next: NextFunction) {
     const userId = req?.user?.userId;
     const { accountNumber, amount } = req.body;
-    const accountInfo = await this.accountService.getAccountDetails(userId, accountNumber);
+    const accountInfo = await this.accountService.getAccountDetails(
+      userId,
+      accountNumber,
+    );
     if (!accountInfo) {
-      return next(new Error('Account not found'));
+      return next(new Error("Account not found"));
     }
     const account: BankAccount = AccountFactory.createAccount(accountInfo);
     const result = await account.withdraw(amount);
+    res.json(result);
+  }
+  async presentCheque(req: Request, res: Response, next: NextFunction) {
+    const userId = req?.user?.userId;
+    const { accountNumber, amount, chequeNumber } = req.body;
+    const accountInfo = await this.accountService.getAccountDetails(
+      userId,
+      accountNumber,
+    );
+    if (!accountInfo) {
+      return next(new Error("Account not found"));
+    }
+    const account: BankAccount = AccountFactory.createAccount(accountInfo);
+    const result = await account.deposit(amount, chequeNumber);
     res.json(result);
   }
 }
